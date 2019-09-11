@@ -1,0 +1,67 @@
+---
+title: "Gapminder Exploration"
+output: github_document
+#output: ioslides_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load, echo = FALSE}
+library(gapminder)
+library(tibble)
+```
+## Function #1: `mean()`
+Calculate the average life expectancy of all countries in `gapminder`:
+```{r, .vcenter}
+mean(gapminder$lifeExp)
+```
+
+Calculate the average life expectancy of Canada:
+```{r}
+mean(gapminder[which(gapminder$country == "Canada"),]$lifeExp)
+```
+
+Calculate the continental average for each numeric data column:
+```{r}
+header <- c("Life Expectancy", "Population", "GDP per Capita")
+temp <- data.frame()
+for (continent in unique(gapminder$continent)) {
+    current <- c(
+        mean(gapminder[gapminder$continent==continent,]$lifeExp, na.rm = TRUE), 
+        mean(gapminder[gapminder$continent==continent,]$pop, na.rm = TRUE),
+        mean(gapminder[gapminder$continent==continent,]$gdpPercap, na.rm=TRUE))
+    temp <- rbind(temp,current)
+}
+names(temp) <- header
+rownames(temp) <- unique(gapminder$continent)
+
+temp
+```
+
+## Function #2: `max()` and `which()`
+Extract the country (or countries) with the highest life expectancy:
+
+```{r}
+gapminder[which(gapminder$lifeExp == max(gapminder$lifeExp)),]
+```
+
+## Function #3: `min()` and `which()`
+Extract the country (or countries) with the lowest GDP per capita:
+
+```{r}
+gapminder[which(gapminder$gdpPercap == min(gapminder$gdpPercap)),]
+```
+
+## Function #4: `length()` and `unique()`
+Extract the number of unique countries in `gapminder`:
+```{r}
+length(unique(gapminder$country))
+```
+
+## Function #5: `summary()`
+Get a summary of `gapminder`:
+```{r}
+summary(gapminder)
+```

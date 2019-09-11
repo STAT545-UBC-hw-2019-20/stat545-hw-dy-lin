@@ -14,7 +14,7 @@ library(tibble)
 ```
 ## Function #1: `mean()`
 Calculate the average life expectancy of all countries in `gapminder`:
-```{r, .vcenter}
+```{r}
 mean(gapminder$lifeExp)
 ```
 

@@ -43,6 +43,6 @@ _Disclaimer:_ The information above was taken ~~verbatim~~ **directly** from the
 
 GitHub: https://github.com/STAT545-UBC
 
-## About me
+## About Me
 
 My name is Diana Lin ([@dy-lin](https://github.com/dy-lin)). I'm a first-year graduate student at the University of British Columbia (UBC) in Vancouver, BC, starting my Master of Science in Bioinformatics. In 2018, I finished my Bachelor of Science in Physiology at McGill University. Following my graduation, I completed an 8-month internship at the [Bioinformatics Technology Lab (BTL)](http://www.birollab.ca), located in [Canada's Michael Smith Genome Sciences Centre](http://www.bcgsc.ca).

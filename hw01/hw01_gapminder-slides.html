@@ -3120,21 +3120,25 @@ slide:not(.current) .plotly.html-widget{
 
 <p>Calculate the average life expectancy of Canada:</p>
 
-<pre class = 'prettyprint lang-r'>mean(gapminder[which(gapminder$country == &quot;Canada&quot;),]$lifeExp)</pre>
+<pre class = 'prettyprint lang-r'>mean(gapminder[which(gapminder$country == 
+                         &quot;Canada&quot;),]$lifeExp)</pre>
 
 <pre >## [1] 74.90275</pre>
 
-</article></slide><slide class=""><hgroup><h2>Function #1: <code>mean()</code></h2></hgroup><article  class="smaller" id="function-1-mean-1">
+</article></slide><slide class=""><hgroup><h2>Function #1: <code>mean()</code></h2></hgroup><article  id="function-1-mean-1" class="smaller">
 
-<p>Calculate the continental average for each numeric data column:</p>
+<p>Calculate the continental average for each numeric data column: </p>
 
 <pre class = 'prettyprint lang-r'>header &lt;- c(&quot;Life Expectancy&quot;, &quot;Population&quot;, &quot;GDP per Capita&quot;)
 temp &lt;- data.frame()
 for (continent in unique(gapminder$continent)) {
     current &lt;- c(
-        mean(gapminder[gapminder$continent==continent,]$lifeExp, na.rm = TRUE), 
-        mean(gapminder[gapminder$continent==continent,]$pop, na.rm = TRUE),
-        mean(gapminder[gapminder$continent==continent,]$gdpPercap, na.rm=TRUE))
+        mean(gapminder[gapminder$continent==continent,]$lifeExp, 
+             na.rm = TRUE), 
+        mean(gapminder[gapminder$continent==continent,]$pop, 
+             na.rm = TRUE),
+        mean(gapminder[gapminder$continent==continent,]$gdpPercap, 
+             na.rm=TRUE))
     temp &lt;- rbind(temp,current)
 }
 names(temp) &lt;- header
@@ -3149,11 +3153,14 @@ temp</pre>
 ## Americas        64.65874   24504795       7136.110
 ## Oceania         74.32621    8874672      18621.609</pre>
 
+
+
 </article></slide><slide class=""><hgroup><h2>Function #2: <code>max()</code> and <code>which()</code></h2></hgroup><article  id="function-2-max-and-which">
 
 <p>Extract the country (or countries) with the highest life expectancy:</p>
 
-<pre class = 'prettyprint lang-r'>gapminder[which(gapminder$lifeExp == max(gapminder$lifeExp)),]</pre>
+<pre class = 'prettyprint lang-r'>gapminder[which(gapminder$lifeExp == 
+                    max(gapminder$lifeExp)),]</pre>
 
 <pre >## # A tibble: 1 x 6
 ##   country continent  year lifeExp       pop gdpPercap
@@ -3162,14 +3169,17 @@ temp</pre>
 
 </article></slide><slide class=""><hgroup><h2>Function #3: <code>min()</code> and <code>which()</code></h2></hgroup><article  id="function-3-min-and-which">
 
-<p>Extract the country (or countries) with the lowest GDP per capita:</p>
+<p>Extract the country (or countries) with the lowest GDP per capita: </p>
 
-<pre class = 'prettyprint lang-r'>gapminder[which(gapminder$gdpPercap == min(gapminder$gdpPercap)),]</pre>
+<pre class = 'prettyprint lang-r'>gapminder[which(gapminder$gdpPercap == 
+                    min(gapminder$gdpPercap)),]</pre>
 
 <pre >## # A tibble: 1 x 6
 ##   country          continent  year lifeExp      pop gdpPercap
 ##   &lt;fct&gt;            &lt;fct&gt;     &lt;int&gt;   &lt;dbl&gt;    &lt;int&gt;     &lt;dbl&gt;
 ## 1 Congo, Dem. Rep. Africa     2002    45.0 55379852      241.</pre>
+
+
 
 </article></slide><slide class=""><hgroup><h2>Function #4: <code>length()</code> and <code>unique()</code></h2></hgroup><article  id="function-4-length-and-unique">
 
@@ -3179,9 +3189,9 @@ temp</pre>
 
 <pre >## [1] 142</pre>
 
-</article></slide><slide class=""><hgroup><h2>Function #5: <code>summary()</code></h2></hgroup><article  class="smaller" id="function-5-summary">
+</article></slide><slide class=""><hgroup><h2>Function #5: <code>summary()</code></h2></hgroup><article  id="function-5-summary" class="smaller">
 
-<p>Get a summary of <code>gapminder</code>:</p>
+<p>Get a summary of <code>gapminder</code>: </p>
 
 <pre class = 'prettyprint lang-r'>summary(gapminder)</pre>
 
@@ -3200,7 +3210,9 @@ temp</pre>
 ##  Mean   :2.960e+07   Mean   :  7215.3  
 ##  3rd Qu.:1.959e+07   3rd Qu.:  9325.5  
 ##  Max.   :1.319e+09   Max.   :113523.1  
-## </pre></article></slide>
+## </pre>
+
+</article></slide>
 
 
   <slide class="backdrop"></slide>

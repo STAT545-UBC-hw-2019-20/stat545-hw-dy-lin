@@ -1,34 +1,42 @@
 ---
 title: "Gapminder Exploration"
-output: ioslides_presentation
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
 ---
 
-```{r load, echo = FALSE}
+```{r, echo = FALSE}
 library(gapminder)
 library(tibble)
 ```
 ## Function #1: `mean()`
 Calculate the average life expectancy of all countries in `gapminder`:
+
 ```{r}
 mean(gapminder$lifeExp)
 ```
 
 Calculate the average life expectancy of Canada:
 ```{r}
-mean(gapminder[which(gapminder$country == "Canada"),]$lifeExp)
+mean(gapminder[which(gapminder$country == 
+                         "Canada"),]$lifeExp)
 ```
 
 ## Function #1: `mean()` {.smaller}
 
 Calculate the continental average for each numeric data column:
+\scriptsize
 ```{r}
 header <- c("Life Expectancy", "Population", "GDP per Capita")
 temp <- data.frame()
 for (continent in unique(gapminder$continent)) {
     current <- c(
-        mean(gapminder[gapminder$continent==continent,]$lifeExp, na.rm = TRUE), 
-        mean(gapminder[gapminder$continent==continent,]$pop, na.rm = TRUE),
-        mean(gapminder[gapminder$continent==continent,]$gdpPercap, na.rm=TRUE))
+        mean(gapminder[gapminder$continent==continent,]$lifeExp, 
+             na.rm = TRUE), 
+        mean(gapminder[gapminder$continent==continent,]$pop, 
+             na.rm = TRUE),
+        mean(gapminder[gapminder$continent==continent,]$gdpPercap, 
+             na.rm=TRUE))
     temp <- rbind(temp,current)
 }
 names(temp) <- header
@@ -36,29 +44,34 @@ rownames(temp) <- unique(gapminder$continent)
 
 temp
 ```
-
+\normalsize
 ## Function #2: `max()` and `which()`
 Extract the country (or countries) with the highest life expectancy:
 
 ```{r}
-gapminder[which(gapminder$lifeExp == max(gapminder$lifeExp)),]
+gapminder[which(gapminder$lifeExp == 
+                    max(gapminder$lifeExp)),]
 ```
 
 ## Function #3: `min()` and `which()`
 Extract the country (or countries) with the lowest GDP per capita:
-
+\footnotesize
 ```{r}
-gapminder[which(gapminder$gdpPercap == min(gapminder$gdpPercap)),]
+gapminder[which(gapminder$gdpPercap == 
+                    min(gapminder$gdpPercap)),]
 ```
-
+\normalsize
 ## Function #4: `length()` and `unique()`
 Extract the number of unique countries in `gapminder`:
+
 ```{r}
 length(unique(gapminder$country))
 ```
 
 ## Function #5: `summary()` {.smaller}
 Get a summary of `gapminder`:
+\footnotesize
 ```{r}
 summary(gapminder)
 ```
+\normalsize

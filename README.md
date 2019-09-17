@@ -1,4 +1,25 @@
 # STAT 545 :bar_chart: :chart_with_upwards_trend: :chart_with_downwards_trend:
+
+## About This Repository
+This repository will track the [assignment](https://stat545.stat.ubc.ca/evaluation/assignments/) submissions for STAT 545: Exploratory Data Analysis. This README has been edited to fulfill the criteria to complete **Exercise 1** of [Assignment 1](https://stat545.stat.ubc.ca/evaluation/hw01/hw01/). 
+
+This repository will hold all 5 assignemnts for this course, each in its respective folder.
+
+To clone this repository:
+```
+$ git clone https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin.git
+```
+
+### Navigation
+Assignment | Due Date
+------------ | -------------
+[hw01](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw01) | Sept 17, 2019
+[hw02](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw02) | Sept 24, 2019
+[hw03](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw03) | Oct 01, 2019
+[hw04](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw04) | Oct 08, 2019
+[hw05](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw05) | Oct 18, 2019
+
+## Course Overview
 Duration: September 3 - October 17, 2019
 
 This is the course website for the 2019-2020 edition of STAT 545A and STAT 547M, colloquially known as just “STAT 545”, delivered at The University of British Columbia in Vancouver, BC.
@@ -21,14 +42,6 @@ Participation | 10%
 _Disclaimer:_ The information above was taken ~~verbatim~~ **directly** from the [course website](https://stat545.stat.ubc.ca).
 
 GitHub: https://github.com/STAT545-UBC
-
-## About this repository
-This repository will track the [Assignment](https://stat545.stat.ubc.ca/evaluation/assignments/) submissions for STAT 545. This README has been edited to fulfill the criteria to complete **Exercise 1** of [Assignment 1](https://stat545.stat.ubc.ca/evaluation/hw01/hw01/).
-
-To clone this repo:
-```
-$ git clone https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin.git
-```
 
 ## About me
 

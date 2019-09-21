@@ -90,15 +90,50 @@ gapminder %>%
 
 #### What values are typical? What’s the spread? What’s the distribution? Etc., tailored to the variable at hand. Feel free to use summary stats, tables, figures.
 
-* A typical value for life expectancy is anywhere from 0 to 100 (realistically), but in this dataset the minimum is 23.60 years and the maximum is 82.60 years.
-* A typical value for country is any of the 142 countries included in this.
+##### Typical Values
+* A typical value for life expectancy is anywhere from 0 to 100 (realistically), but in this dataset the minimum is 23.60 years and the maximum is 82.60 years
+* A typical value for country is any of the 142 countries included in this
 
 ```{r}
 summary(gapminder)
 ```
 
 
+##### Spread: Range
+* The range is defined as the difference between the highest and lowest values. * The lowest life expectancy is 23.599 years, and the highest life expectancy is 82.603 years. The range is 59.004 years.
 
+```{r}
+range <- gapminder %>%
+    select(lifeExp) %>%
+        range()
+
+range[2] - range[1]
+```
+
+##### Spread: Interquartile Range
+* The first quartile is 48.20 years, the second quartile (the median) is 60.71 years, and the third quartile is 70.85 years
+* The interquartile range is the third minus the first quartile:
+
+```{r}
+thirdq <- summary(gapminder$lifeExp)["3rd Qu."]
+firstq <- summary(gapminder$lifeExp)["1st Qu."]
+
+thirdq - firstq
+```
+
+
+##### Spread: Variance
+* The variance in life expectancy is 166.8517 years.
+```{r}
+var(gapminder$lifeExp)
+```
+
+##### Distribution
+* The distribution of life expectancy can be visualized using a histogram.
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+    geom_histogram(bins=100)
+```
 ## Exercise 3: Explore various plot types
 
 Make two plots that have some value to them. That is, plots that someone might actually consider making for an analysis. Just don’t make the same plots we made in class – feel free to use a data set from the `datasets` R package if you wish.

@@ -1,0 +1,275 @@
+---
+title: "Assignment 2"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE, echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set Up
+Load the necessary packages for this assignment:
+```{r load}
+library(gapminder)
+library(tidyverse)
+library(knitr)
+```
+
+## Exercise 1: Basic `dplyr`
+### Exercise 1.1
+Use `filter()` to subset the `gapminder` data to three countries of your choice in the 1970s.
+```{r}
+filter(gapminder, year >= 1970 &
+           year < 1980, 
+       country == "Canada" | 
+           country == "China" | 
+           country == "Japan") %>%
+    kable()
+```
+
+### Exercise 1.2
+Use the pipe operator `%>%` to select `country` and `gdpPercap` from your filtered dataset in 1.1.
+```{r}
+filter(gapminder, year >= 1970 & 
+           year < 1980, 
+       country == "Canada" | 
+           country == "China" | 
+           country == "Japan") %>%
+    select("country", "gdpPercap") %>%
+    kable()
+```
+
+### Exercise 1.3
+Filter gapminder to all entries that have experienced a drop in life expectancy. Be sure to include a new variable that’s the increase in life expectancy in your tibble. Hint: you might find the `lag()` or `diff()` functions useful.
+
+```{r}
+gapminder %>%
+    group_by(country) %>%
+    arrange(year, .by_group = TRUE) %>%
+    mutate(lifeExpInc = lifeExp - lag(lifeExp)) %>%
+    filter(lifeExpInc < 0) %>%
+    kable()
+```
+
+
+### Exercise 1.4
+Filter gapminder so that it shows the max GDP per capita experienced by each country. Hint: you might find the `max()` function useful here.
+
+```{r}
+gapminder %>%
+    group_by(country) %>% 
+    summarize(maxGDP = max(gdpPercap)) %>%
+    kable()
+```
+
+
+### Exercise 1.5
+Produce a scatterplot of Canada’s life expectancy vs. GDP per capita using `ggplot2`, without defining a new variable. That is, after filtering the gapminder data set, pipe it directly into the `ggplot()` function. Ensure GDP per capita is on a log scale.
+
+```{r}
+gapminder %>%
+    filter(country == "Canada") %>%
+    select(lifeExp, gdpPercap) %>%
+    ggplot(aes(gdpPercap, lifeExp)) +
+    geom_point() + 
+    scale_x_log10() +
+    ggtitle("Canada's Life Expectancy vs GDP per Capita") + 
+    ylab("Life Expectancy (years)") +
+    xlab("GDP per Capita")
+```
+
+
+## Exercise 2: Explore individual variables with `dplyr`
+
+Pick one categorical variable and one quantitative variable to explore. Answer the following questions in whichever way you think is appropriate, using `dplyr`:
+
+#### What are possible values (or range, whichever is appropriate) of each variable?
+* Categorical variable: `country`
+* Possible values for the categorical variable are the categories itself. The range would be however many categories there are.
+* There are 142 countries in this dataset.
+```{r}
+gapminder %>%
+    select(country) %>%
+    unique() %>% 
+    nrow()
+```
+* Quantitative variable: `lifeExp`
+* Possible values are any positive numbers (realistically <= 100). In the case of `lifeExp`, a range of 0 to the maximum life expectancy in the dataset (rounded to a whole number) would be an appropriate range.
+* The highest life expectancy is 83 years in this dataset.
+
+```{r}
+gapminder %>%
+    select(lifeExp) %>%
+    max() %>%
+    round()
+```
+
+#### What values are typical? What’s the spread? What’s the distribution? Etc., tailored to the variable at hand. Feel free to use summary stats, tables, figures.
+
+##### Typical Values
+* A typical value for life expectancy is anywhere from 0 to 100 (realistically), but in this dataset the minimum is 23.60 years and the maximum is 82.60 years.
+* A typical value for country is any of the 142 countries included in this dataset.
+
+```{r}
+summary(gapminder) %>%
+    kable()
+```
+
+##### Spread: Range
+* The range is defined as the difference between the highest and lowest values.
+* The lowest life expectancy is 23.599 years, and the highest life expectancy is 82.603 years.
+* The range is 59.004 years.
+
+```{r}
+range <- gapminder %>%
+    select(lifeExp) %>%
+        range()
+
+range[2] - range[1]
+```
+
+##### Spread: Interquartile Range
+* The first quartile is 48.20 years, the second quartile (the median) is 60.71 years, and the third quartile is 70.85 years.
+* The interquartile range is the third minus the first quartile (which can also be calculated using the function `IQR()`):
+
+```{r}
+select(gapminder, lifeExp) %>%
+    summary() %>%
+    kable()
+
+(thirdq <- summary(gapminder$lifeExp)["3rd Qu."])
+(firstq <- summary(gapminder$lifeExp)["1st Qu."])
+
+unname(thirdq - firstq)
+
+IQR(gapminder$lifeExp)
+```
+
+
+##### Spread: Variance
+* The variance can be calculated using the function `var()`. 
+* The variance in life expectancy is 166.8517 years.
+```{r}
+gapminder %>%
+    select(lifeExp) %>%
+    var()
+```
+
+##### Distribution
+* The distribution of life expectancy can be visualized using a histogram.
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+    geom_histogram(bins=100)
+```
+
+* The distribution of `country` can be determined using `table()`.
+* In this case, there are 12 data points (i.e. rows) per country in this dataset.
+```{r}
+library(DT)
+gapminder %>% 
+    select(country) %>% 
+    table() %>%
+    kable(col.names = c("Country", "Frequency"))
+```
+
+## Exercise 3: Explore various plot types
+
+Make two plots that have some value to them. That is, plots that someone might actually consider making for an analysis. Just don’t make the same plots we made in class – feel free to use a data set from the `datasets` R package if you wish. You don’t have to use all the data in every plot! It’s fine to filter down to one country or a small handful of countries.
+
+#### 1. A scatterplot of two quantitative variables:
+
+* The plot below shows that in Asia, the life expectancy has increased as the population increased, whereas most other continents have a steady increase in life expectancy while the population remains relatively the same.
+```{r}
+gapminder %>%
+    mutate(million=pop/(10**6)) %>%
+    ggplot(aes(x=million,y=lifeExp)) +
+    geom_point(aes(shape = continent, colour = year)) +
+    ggtitle("Life Expectancy vs Population") +
+    xlab("Population (millions)") +
+    ylab("Life Expectancy (years)")
+```
+
+#### 2. One other plot besides a scatterplot:
+
+* The plot below shows that in North America, the life expectancy has been increasing since 1952, where Mexico, in particular has experienced the greatest increase in life expectancy (a much steeper slope in the graph). Canada has a higher life expectancy than the United States, the rate of increase is very similar.
+```{r}
+gapminder %>%
+    filter(country == "Canada" | country == "United States" | country == "Mexico") %>%
+    ggplot(aes(x = year, y = lifeExp)) +
+    geom_line(aes(colour = country)) +
+    ggtitle("Life Expectancy in North America") +
+    xlab("Year") + 
+    ylab("Life Expectancy (years)")
+```
+
+
+## Recycling (Optional)
+Evaluate this code and describe the result. Presumably the analyst’s intent was to get the data for Rwanda and Afghanistan. Did they succeed? Why or why not? If not, what is the correct way to do this?
+
+`filter(gapminder, country == c("Rwanda", "Afghanistan"))`
+
+```{r}
+# The Analyst's Way:
+filter(gapminder, country == c("Rwanda", "Afghanistan")) %>% 
+    nrow()
+
+# The Correct Way:
+filter(gapminder, country == "Rwanda" | country == "Afghanistan") %>%
+    nrow()
+
+nrow(gapminder)
+```
+* As depicted above, the analyst's way is missing half the data (since it has half the number of rows than the correct method).
+* The analyst did NOT succeed, because he or she used the vector in the filtering condition. This vector happens to be of length 2, whereas the gapminder dataset has 1704 rows. So during comparison, each country of each row is compared to this vector of length 2, on repeat. 
+* This process is known as 'recycling', where the vector of length 2 is actually recycled-- meaning that in essence, the 1704 rows are being compared to 852 sequential copies of this vector of length 2.
+* To demonstrate, I've subsampled the dataset to the first 6 rows using `head()`, and filtered using the analyst's way. As you can see, only 3 of the 6 rows have been filtered out (as observed above, where 50% of the data is missing).
+
+```{r}
+head(gapminder) %>%
+    filter(country == c("Rwanda", "Afghanistan")) %>%
+    kable()
+```
+
+* This is due to the fact that for this reduced subsample, these are the exact comparisons being made, where only the TRUE ones are being filtered out as matching the criteria.
+```{r}
+table(
+    c(
+        "Afghanistan" == "Rwanda",
+        "Afghanistan" == "Afghanistan",
+        "Afghanistan" == "Rwanda",
+        "Afghanistan" == "Afghanistan",
+        "Afghanistan" == "Rwanda",
+        "Afghanistan" == "Afghanistan"
+    )
+) %>% 
+    kable(col.names= c("Boolean", "Frequency"))
+```
+
+* This is a result of an error in logic. The analyst most likely assumed that the comparison being made at each row of this reduce subsample would be:
+```{r}
+table(
+    c(
+        "Afghanistan" == c("Rwanda", "Afghanistan"),
+        "Afghanistan" == c("Rwanda", "Afghanistan"),
+        "Afghanistan" == c("Rwanda", "Afghanistan"),
+        "Afghanistan" == c("Rwanda", "Afghanistan"),
+        "Afghanistan" == c("Rwanda", "Afghanistan"),
+        "Afghanistan" == c("Rwanda", "Afghanistan")
+    )
+) %>% 
+    kable(col.names= c("Boolean", "Frequency"))
+```
+
+* The analyst did not consider the recycling that R does when comparing vectors are of different lengths.
+
+## Tibble display
+Present numerical tables in a more attractive form using `knitr::kable()` for small tibbles (say, up to 10 rows), and `DT::datatable()` for larger tibbles.
+
+* see above exercises as well
+* `DT::datatable()` not used as this is a `LaTeX` output, not `html`.
+
+```{r}
+kable(head(gapminder))
+```
+

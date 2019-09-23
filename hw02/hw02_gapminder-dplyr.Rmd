@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Set Up
 Load the necessary packages for this assignment:
-```{r load}
+```{r load,  message=FALSE, warning=FALSE}
 library(gapminder)
 library(tidyverse)
 library(knitr)

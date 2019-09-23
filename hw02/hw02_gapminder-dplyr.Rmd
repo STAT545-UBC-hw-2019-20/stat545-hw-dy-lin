@@ -1,6 +1,7 @@
 ---
 title: "Assignment 2"
-output: html_document
+output:
+  html_document: default
 ---
 
 ```{r setup, include=FALSE, echo = FALSE}
@@ -12,6 +13,8 @@ Load the necessary packages for this assignment:
 ```{r load}
 library(gapminder)
 library(tidyverse)
+library(knitr)
+library(DT)
 ```
 
 ## Exercise 1: Basic `dplyr`
@@ -22,7 +25,8 @@ filter(gapminder, year >= 1970 &
            year < 1980, 
        country == "Canada" | 
            country == "China" | 
-           country == "Japan")
+           country == "Japan") %>%
+    kable()
 ```
 
 ### Exercise 1.2
@@ -33,7 +37,8 @@ filter(gapminder, year >= 1970 &
        country == "Canada" | 
            country == "China" | 
            country == "Japan") %>%
-    select("country", "gdpPercap")
+    select("country", "gdpPercap") %>%
+    kable()
 ```
 
 ### Exercise 1.3
@@ -44,7 +49,8 @@ gapminder %>%
     group_by(country) %>%
     arrange(year, .by_group = TRUE) %>%
     mutate(lifeExpInc = lifeExp - lag(lifeExp)) %>%
-    filter(lifeExpInc < 0)
+    filter(lifeExpInc < 0) %>%
+    datatable()
 ```
 
 
@@ -54,7 +60,8 @@ Filter gapminder so that it shows the max GDP per capita experienced by each cou
 ```{r}
 gapminder %>%
     group_by(country) %>% 
-    summarize(maxGDP = max(gdpPercap))
+    summarize(maxGDP = max(gdpPercap)) %>%
+    datatable()
 ```
 
 
@@ -106,7 +113,8 @@ gapminder %>%
 * A typical value for country is any of the 142 countries included in this dataset.
 
 ```{r}
-summary(gapminder)
+summary(gapminder) %>%
+    kable()
 ```
 
 ##### Spread: Range
@@ -128,7 +136,8 @@ range[2] - range[1]
 
 ```{r}
 select(gapminder, lifeExp) %>%
-    summary()
+    summary() %>%
+    kable()
 
 (thirdq <- summary(gapminder$lifeExp)["3rd Qu."])
 (firstq <- summary(gapminder$lifeExp)["1st Qu."])
@@ -161,8 +170,11 @@ ggplot(gapminder, aes(lifeExp)) +
 library(DT)
 gapminder %>% 
     select(country) %>% 
-    table()
+    table() %>%
+    as.data.frame() %>%
+    datatable(colnames = c("Country", "Frequency"))
 ```
+
 ## Exercise 3: Explore various plot types
 
 Make two plots that have some value to them. That is, plots that someone might actually consider making for an analysis. Just don’t make the same plots we made in class – feel free to use a data set from the `datasets` R package if you wish. You don’t have to use all the data in every plot! It’s fine to filter down to one country or a small handful of countries.
@@ -217,7 +229,8 @@ nrow(gapminder)
 
 ```{r}
 head(gapminder) %>%
-    filter(country == c("Rwanda", "Afghanistan"))
+    filter(country == c("Rwanda", "Afghanistan")) %>%
+    kable()
 ```
 
 * This is due to the fact that for this reduced subsample, these are the exact comparisons being made, where only the TRUE ones are being filtered out as matching the criteria.
@@ -231,7 +244,8 @@ table(
         "Afghanistan" == "Rwanda",
         "Afghanistan" == "Afghanistan"
     )
-)
+) %>% 
+    kable(col.names= c("Boolean", "Frequency"))
 ```
 
 * This is a result of an error in logic. The analyst most likely assumed that the comparison being made at each row of this reduce subsample would be:
@@ -245,7 +259,8 @@ table(
         "Afghanistan" == c("Rwanda", "Afghanistan"),
         "Afghanistan" == c("Rwanda", "Afghanistan")
     )
-)
+) %>% 
+    kable(col.names= c("Boolean", "Frequency"))
 ```
 
 * The analyst did not consider the recycling that R does when comparing vectors are of different lengths.
@@ -253,9 +268,9 @@ table(
 ## Tibble display
 Present numerical tables in a more attractive form using `knitr::kable()` for small tibbles (say, up to 10 rows), and `DT::datatable()` for larger tibbles.
 
+* see above exercises as well
+
 ```{r}
-library(knitr)
-library(DT)
 kable(head(gapminder))
 datatable(gapminder)
 ```

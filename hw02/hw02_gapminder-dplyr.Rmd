@@ -1,7 +1,8 @@
 ---
 title: "Assignment 2"
 output:
-  html_document: default
+  html_document:
+    toc: true
 ---
 
 ```{r setup, include=FALSE, echo = FALSE}
@@ -21,24 +22,26 @@ library(DT)
 ### Exercise 1.1
 Use `filter()` to subset the `gapminder` data to three countries of your choice in the 1970s.
 ```{r}
-filter(gapminder, year >= 1970 &
+gapminder %>%
+  filter(year >= 1970 & 
            year < 1980, 
-       country == "Canada" | 
+         country == "Canada" | 
            country == "China" | 
            country == "Japan") %>%
-    kable()
+  kable()
 ```
 
 ### Exercise 1.2
 Use the pipe operator `%>%` to select `country` and `gdpPercap` from your filtered dataset in 1.1.
 ```{r}
-filter(gapminder, year >= 1970 & 
+gapminder %>%
+  filter(year >= 1970 & 
            year < 1980, 
        country == "Canada" | 
            country == "China" | 
            country == "Japan") %>%
-    select("country", "gdpPercap") %>%
-    kable()
+  select("country", "gdpPercap") %>%
+  kable()
 ```
 
 ### Exercise 1.3
@@ -46,11 +49,12 @@ Filter gapminder to all entries that have experienced a drop in life expectancy.
 
 ```{r}
 gapminder %>%
-    group_by(country) %>%
-    arrange(year, .by_group = TRUE) %>%
-    mutate(lifeExpInc = lifeExp - lag(lifeExp)) %>%
-    filter(lifeExpInc < 0) %>%
-    datatable()
+  arrange(year) %>%
+  group_by(country) %>%
+  mutate(lifeExpInc = lifeExp - lag(lifeExp)) %>%
+  drop_na() %>%
+  filter(lifeExpInc < 0) %>%
+  datatable()
 ```
 
 
@@ -113,14 +117,23 @@ gapminder %>%
 * A typical value for country is any of the 142 countries included in this dataset.
 
 ```{r}
+# Find the number of countries in this dataset:
+gapminder %>%
+  select(country) %>%
+  unique() %>%
+  nrow()
+
 summary(gapminder) %>%
     kable()
 ```
 
 ##### Spread: Range
+* Range does not apply to categorical variables (i.e. `country`)
+* Range only applies to quantitative variables (i.e. `lifeExp`)
 * The range is defined as the difference between the highest and lowest values.
 * The lowest life expectancy is 23.599 years, and the highest life expectancy is 82.603 years.
 * The range is 59.004 years.
+
 
 ```{r}
 range <- gapminder %>%
@@ -131,6 +144,8 @@ range[2] - range[1]
 ```
 
 ##### Spread: Interquartile Range
+* Interquartile range does not apply to categorical variables (i.e. `country`)
+* Interquartile range only applies to quantitative variables (i.e. `lifeExp`)
 * The first quartile is 48.20 years, the second quartile (the median) is 60.71 years, and the third quartile is 70.85 years.
 * The interquartile range is the third minus the first quartile (which can also be calculated using the function `IQR()`):
 
@@ -147,32 +162,34 @@ unname(thirdq - firstq)
 IQR(gapminder$lifeExp)
 ```
 
+* The interquartile range is 22.6475 years.
 
 ##### Spread: Variance
 * The variance can be calculated using the function `var()`. 
 * The variance in life expectancy is 166.8517 years.
 ```{r}
 gapminder %>%
-    select(lifeExp) %>%
-    var()
+  select(lifeExp) %>%
+  var()
 ```
+
 
 ##### Distribution
 * The distribution of life expectancy can be visualized using a histogram.
 ```{r}
 ggplot(gapminder, aes(lifeExp)) +
-    geom_histogram(bins=100)
+  geom_histogram(bins=100) + 
+  ggtitle("Distribution of Life Expectancy") +
+  xlab("Life Expectancy") +
+  ylab("Count")
 ```
 
 * The distribution of `country` can be determined using `table()`.
 * In this case, there are 12 data points (i.e. rows) per country in this dataset.
 ```{r}
-library(DT)
 gapminder %>% 
-    select(country) %>% 
-    table() %>%
-    as.data.frame() %>%
-    datatable(colnames = c("Country", "Frequency"))
+  count(country) %>%
+  datatable()
 ```
 
 ## Exercise 3: Explore various plot types
@@ -209,16 +226,18 @@ gapminder %>%
 ## Recycling (Optional)
 Evaluate this code and describe the result. Presumably the analyst’s intent was to get the data for Rwanda and Afghanistan. Did they succeed? Why or why not? If not, what is the correct way to do this?
 
-`filter(gapminder, country == c("Rwanda", "Afghanistan"))`
+```
+filter(gapminder, country == c("Rwanda", "Afghanistan"))
+```
 
 ```{r}
 # The Analyst's Way:
 filter(gapminder, country == c("Rwanda", "Afghanistan")) %>% 
-    nrow()
+  nrow()
 
 # The Correct Way:
 filter(gapminder, country == "Rwanda" | country == "Afghanistan") %>%
-    nrow()
+  nrow()
 
 nrow(gapminder)
 ```

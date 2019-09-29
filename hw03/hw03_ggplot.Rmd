@@ -1,0 +1,173 @@
+---
+title: "Assignemnt 3: dplyr/gggplot2 Part II"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style type="text/css">
+.twoC {width: 100%}
+.clearer {clear: both}
+.twoC .table {max-width: 50%; float: left}
+.twoC img {max-width: 50%; float: right}
+</style>
+
+<div class="clearer">
+## Set Up
+Install and load `dplyr`, probably via the `tidyverse` meta-package.
+```{r load, warning = FALSE}
+library(gapminder)
+library(tidyverse)
+library(ggridges)
+library(knitr)
+```
+
+Pick three of the six tasks below, and produce:
+
+* a tibble, using `dplyr` as your data manipulation tool;
+* an accompanying plot of data from the tibble, using `ggplot2` as your visualization tool; and
+* some dialogue about what your tables/figures show (doesn’t have to be much)
+
+Relax about the following things:
+
+* Your figure does not have to depict every single number from the data aggregation result. Use your judgement. It just needs to complement the table, add context, and allow for some sanity checking both ways.
+* Tidying/reshaping is NOT your assignment. Many of your tables will be awkwardly shaped in the report. That’s OK.
+* Table beauty is not a big deal. Simply printing to “screen” is fine.
+
+**I have chosen to do Task #2, #3 and  #5.**
+
+## Task Option #2
+Get the maximum and minimum of GDP per capita for all continents.
+<!-- CHEAT SHEET
+* grouped bar graphs require a categorical variable, so min/max variables had to be split across two rows
+* rbind() used to combine two dataframes/tibbles
+* theme(text= element_text(size=X)) used to increase size of fonts in ggplot globally
+-->
+```{r}
+min <- gapminder %>%
+  group_by(continent) %>%
+  summarize(GDP = min(gdpPercap), value = "min")
+
+max <- gapminder %>%
+  group_by(continent) %>%
+  summarize(GDP = max(gdpPercap), value = "max")
+
+table <- rbind(min,max) %>% arrange(continent)
+
+plot <- table %>%
+  group_by(value) %>%
+  ggplot(aes(continent,GDP, fill = value)) +
+  geom_col(position="dodge") +
+  scale_fill_discrete("", "Maximum GDP per capita", "Minimum GDP per capita") +
+  ylab("GDP per capita") +
+  xlab("Continent") +
+  ggtitle("Maximum and Minimum GDP per capita") + 
+  theme(text = element_text(size=18))
+```
+
+* In the figures below, the maximum and minimum GDP per capita for all continents is depicted. In the ed bars are the maximum, while in the blue bars are the minimum.
+* Looking at this plot, Asia not only has the highest maximum GDP per capita, but also the largest difference between the minimum and maximum.
+</div>
+
+<!-- CHEAT SHEET
+* must wrap all 'full width' sections using clearer, and must wrap two column ones with twoC
+* everything printed that is wrapped with twoC will be put in two columns
+* in order to put just the tables and the figures in two columns, they must be the only thing produced by code in the wrap
+* must save plots/tables separately and print them to screen in the twoC wrap, the code making the ggplot objects can be full width
+-->
+
+<div class="twoC">
+```{r, echo = FALSE}
+kable(table)
+```
+
+```{r, echo = FALSE}
+print(plot)
+```
+</div>
+<div class="clearer">
+## Task Option #3
+Look at the spread of GDP per capita within the continents.
+
+```{r}
+table <- gapminder %>% 
+  filter(year > 1980)
+
+plot <- table %>%
+  ggplot(aes(gdpPercap, continent)) +
+  geom_density_ridges(scale = 0.9) +
+  ggtitle("Spread of GDP from 1980-2007") + 
+  theme(text = element_text(size=18)) +
+  xlab("GDP per capita") +
+  ylab("Continent")
+```
+
+* In the figures below, the spread of GDP per capita within each continent from 1980-2007 is depicted.
+* The table has been truncated to 9 rows as there are too many to show side by side with the plot.
+* While Asia has the highest maximum GDP per capita as demonstrated with the previous plot, in this plot, Africa has the highest peak around a GDP per capita of 2000, while Europe has the widest spread of GDP per capita.
+</div>
+
+<div class="twoC">
+```{r, echo = FALSE}
+kable(head(table, 9)) 
+```
+
+```{r, echo = FALSE}
+suppressMessages(print(plot))
+```
+</div>
+<!-- CHEAT SHEET
+* cannot use twoC for tables printed to screen, must be kable
+* code outputs (likes like printing to console) always takes full width?
+* suppressMessages() will suppress the message about picking a value in ggridges
+-->
+<div class="clearer">
+## Task Option #5
+How is life expectancy changing over time on different continents?
+
+```{r}
+table <- gapminder %>%
+  group_by(continent, year) %>%
+  summarize(avglifeExp = mean(lifeExp))
+
+plot <- table %>%
+  ggplot(aes(year,avglifeExp, colour = continent)) +
+  geom_line() +
+  ggtitle("Mean Life Expectancy from 1952-2007") + 
+  theme(text = element_text(size=18)) +
+  xlab("Year") +
+  ylab("Average Life Expectancy")
+```
+* In the figures below, the mean life expectancy from 1952 to 2007 for each continent is depicted.
+* The table has been truncated to 9 rows as there are too many to show side by side with the plot.
+* Africa has the steepest slope, representing the most drastic increase in life expectancy, but ends up plateauing near the end.
+* Americas and Asia share a similar slope and trend, while so do Oceania and Europe.
+* However, Oceania experiences the biggest dip in life expectancy (from 1960 to 1980), and Africa experiences the second dip (after 2000).
+
+</div>
+
+<div class="twoC">
+```{r, echo = FALSE}
+kable(head(table,9))
+```
+
+```{r, echo = FALSE}
+print(plot)
+```
+</div>
+
+<div class="clearer">
+## Optional
+Get table and figure side-by-side.
+
+* _Attribution:_ Following the suggested <a href=https://gist.github.com/jennybc/e9e9aba6ba18c72cec26>guide</a>, I was able to get the plots and tables side by side, but had to truncate the tables to maintain aesthetics.
+* The plots and tables only appear side by side if the window size is sufficient for this to occur.
+* Some tables had to be truncated to 9 rows as there are too many to show side by side with the plots
+* I am aware that tables can be printed (messily) to console, but the two column wrapping only seems to work with `kable()` due to the `.table` tag in the `CSS` stylesheet.
+</div>
+
+<!-- CHEAT SHEET
+* must use HTML tags to embed links
+-->

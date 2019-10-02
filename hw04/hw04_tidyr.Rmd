@@ -1,0 +1,105 @@
+---
+title: "Assignment 04: Tidy data and joins"
+output:
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Set Up
+
+Load required packages:
+
+```{r}
+suppressMessages(library(tidyverse))
+suppressMessages(library(gapminder))
+```
+
+## Exercise 1: Univariate Data Reshaping
+
+Choose **EITHER** “Univariate Option 1” or “Univariate Option 2”. Both of these problems have three components:
+
+1. Putting data in wider format;
+1. Producing a plot of the wide data;
+1. Re-lengthening the wider data. 
+
+You are expected to use `pivot_wider()` and `pivot_longer()` for reshaping, and ggplot2 for the plot.
+
+Regarding the plot:
+
+* Don’t worry about plotting all of the data from the wide tibble.
+* The plot should be something that someone might actually want to produce in an analysis.
+
+### Univariate Option 1
+1. Make a tibble with one row per year, and columns for life expectancy for two or more countries.
+1. Take advantage of this new data shape to scatterplot life expectancy for one country against that of another.
+1. Re-lengthen the data.
+
+### Univariate Option 2
+1. Compute some measure of life expectancy (mean? median? min? max?) for all possible combinations of continent and year. Reshape that to have one row per year and one variable for each continent. Or the other way around: one row per continent and one variable per year.
+1. Is there a plot that is easier to make with the data in this shape versis the usual form? Try making such a plot!
+1. Re-lengthen the data.
+
+## Multivariate Data Reshaping
+Choose **EITHER** “Multivariate Option 1” or “Multivariate Option 2”. All of these problems have two components:
+
+1. Putting data in wider format;
+1. Re-lengthening the data.
+
+Don’t worry about producing a plot here. You are expected to use `pivot_wider()` and `pivot_longer()` for reshaping.
+
+### Multivariate Option 1
+
+1. Make a tibble with one row per year, and columns for life expectancy and GDP per capita (or two other numeric variables) for two or more countries.
+1. Re-lengthen the data.
+
+### Multivariate Option 2
+
+1. Compute some measure of life expectancy and GDP per capita (or two other numeric variables) (mean? median? min? max?) for all possible combinations of continent and year. Reshape that to have one row per year and one variable for each continent-measurement combination. Or the other way around: one row per continent and one variable for each year-measurement combination.
+1. Re-lengthen the data.
+
+## Exercise 3: Table Joins
+
+Do **ALL** of the activities in this section.
+
+Read in the made-up wedding guestlist and email addresses using the following lines (go ahead and copy-paste these):
+```
+guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
+email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+```
+
+```{r}
+guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
+email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+```
+
+Then, complete the following tasks using the `tidyverse` (`tidyr`, `dplyr`, …). No need to do any pivoting – feel free to leave `guest` in its current format.
+
+
+### Exercise 3.1
+
+For each guest in the guestlist (`guest` tibble), add a column for email address, which can be found in the `email` tibble.
+
+```{r}
+
+```
+
+### Exercise 3.2
+
+Who do we have emails for, yet are not on the guestlist?
+
+```{r}
+
+```
+
+### Exercise 3.3
+
+Make a guestlist that includes everyone we have emails for (in addition to those on the original guestlist).
+
+```{r}
+
+```
+

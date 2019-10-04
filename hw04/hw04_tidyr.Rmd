@@ -16,6 +16,7 @@ Load required packages:
 ```{r}
 suppressMessages(library(tidyverse))
 suppressMessages(library(gapminder))
+suppressMessages(library(DT))
 ```
 
 ## Exercise 1: Univariate Data Reshaping
@@ -34,16 +35,56 @@ Regarding the plot:
 * The plot should be something that someone might actually want to produce in an analysis.
 
 ### Univariate Option 1
-1. Make a tibble with one row per year, and columns for life expectancy for two or more countries.
-1. Take advantage of this new data shape to scatterplot life expectancy for one country against that of another.
-1. Re-lengthen the data.
+#### 1. Make a tibble with one row per year, and columns for life expectancy for two or more countries.
 
-### Univariate Option 2
-1. Compute some measure of life expectancy (mean? median? min? max?) for all possible combinations of continent and year. Reshape that to have one row per year and one variable for each continent. Or the other way around: one row per continent and one variable per year.
-1. Is there a plot that is easier to make with the data in this shape versis the usual form? Try making such a plot!
-1. Re-lengthen the data.
+```{r}
+widened <- gapminder %>% 
+  pivot_wider(id_cols = year, names_from = "country", values_from = lifeExp)
+```
 
-## Multivariate Data Reshaping
+* Each row in this table corresponds to a single year, and there is a column for each of the 142 countries containing the life expectancy in years.
+
+* There is a total of only 12 rows in this `tibble`, as there are only 12 years in the gapminder data set.
+
+```{r, echo = FALSE}
+datatable(widened, rownames = FALSE)
+```
+
+#### 2. Take advantage of this new data shape to scatterplot life expectancy for one country against that of another.
+
+```{r}
+widened_plot <- widened %>%
+  ggplot(aes(Canada, China)) +
+  geom_point(aes(color = as.factor(year))) +
+  ggtitle("Life Expectancy from 1952 to 2007") +
+  ylab("Life Expectancy in China (years)") +
+  xlab("Life Expectancy in Canada (years)") +
+  scale_color_discrete("Year")
+```
+
+* China consistently has a lower life expectancy than Canada in every year.
+* Both countries have a steadily increasing life expectancy overall, except for China in 1962, where the China's life expectancy dropped substantially.
+
+```{r, echo = FALSE}
+print(widened_plot)
+```
+
+
+
+#### 3. Re-lengthen the data.
+
+```{r}
+lengthened <- widened %>%
+  pivot_longer(cols = -year, names_to = "country", values_to = "lifeExp")
+```
+
+* The relengthened `tibble` will _only_ contain `year`, `country`, `lifeExp` (since the other columns `continent`, `gdpPercap` and `pop` were dropped during the original `pivot_wider()`), with each combination of `country` and `year` in each row.
+
+```{r, echo = FALSE}
+datatable(lengthened)
+```
+
+## Exercise 2: Multivariate Data Reshaping
 Choose **EITHER** “Multivariate Option 1” or “Multivariate Option 2”. All of these problems have two components:
 
 1. Putting data in wider format;
@@ -53,23 +94,43 @@ Don’t worry about producing a plot here. You are expected to use `pivot_wider(
 
 ### Multivariate Option 1
 
-1. Make a tibble with one row per year, and columns for life expectancy and GDP per capita (or two other numeric variables) for two or more countries.
-1. Re-lengthen the data.
+#### 1. Make a tibble with one row per year, and columns for life expectancy and GDP per capita (or two other numeric variables) for two or more countries.
 
-### Multivariate Option 2
+```{r}
+widened <- gapminder %>%
+  pivot_wider(id_cols  = year, 
+              names_from = country, 
+              names_sep = "_", 
+              values_from = c("lifeExp", "gdpPercap"))
+```
 
-1. Compute some measure of life expectancy and GDP per capita (or two other numeric variables) (mean? median? min? max?) for all possible combinations of continent and year. Reshape that to have one row per year and one variable for each continent-measurement combination. Or the other way around: one row per continent and one variable for each year-measurement combination.
-1. Re-lengthen the data.
+* This widened `tibble` contains a column for `lifeExp` and `gdpPercap` of all 142 countries for each row, meaning a total of 285 columns.
+* This `tibble` has 12 rows, as that is the number of unique years in the `gapminder` dataset.
+
+```{r, echo = FALSE}
+datatable(widened, rownames = FALSE)
+```
+
+#### 2. Re-lengthen the data.
+
+```{r}
+lengthened <- widened %>%
+  pivot_longer(cols = -year,
+               names_to = c(".value", "country"),
+               names_sep = "_")
+```
+
+* The relengthened `tibble` below will _only_ contain `year`, `country`, `lifeExp` and `gdpPercap` (since the other columns `continent` and `pop` were dropped during the original `pivot_wider()`), with each combination of `country` and `year` in each row.
+
+```{r, echo = FALSE}
+datatable(lengthened, rownames = FALSE)
+```
 
 ## Exercise 3: Table Joins
 
 Do **ALL** of the activities in this section.
 
 Read in the made-up wedding guestlist and email addresses using the following lines (go ahead and copy-paste these):
-```
-guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
-email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
-```
 
 ```{r}
 guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
@@ -81,25 +142,48 @@ Then, complete the following tasks using the `tidyverse` (`tidyr`, `dplyr`, …)
 
 ### Exercise 3.1
 
-For each guest in the guestlist (`guest` tibble), add a column for email address, which can be found in the `email` tibble.
+#### For each guest in the guestlist (`guest` tibble), add a column for email address, which can be found in the `email` tibble.
 
 ```{r}
+email_sep <- email %>%
+  separate_rows(email, guest, sep = ", ") %>%
+  rename(name = guest)
 
+guest_email <- left_join(guest,
+          email_sep,
+          by = "name"
+)
+```
+
+```{r, echo = FALSE}
+datatable(guest_email, rownames = FALSE)
 ```
 
 ### Exercise 3.2
 
-Who do we have emails for, yet are not on the guestlist?
+#### Who do we have emails for, yet are not on the guestlist?
 
 ```{r}
+email_not_guest <- anti_join(email_sep,guest, by = "name")
+```
 
+* There are only three people we have emails for that are not on the guest list.
+
+```{r, echo = FALSE}
+datatable(email_not_guest, rownames = FALSE)
 ```
 
 ### Exercise 3.3
 
-Make a guestlist that includes everyone we have emails for (in addition to those on the original guestlist).
+#### Make a guestlist that includes everyone we have emails for (in addition to those on the original guestlist).
 
 ```{r}
+all <- full_join(guest, email_sep, by = "name")
+```
 
+* The three people with emails but aren't on the guest list have been appended to the end of the `tibble`.
+
+```{r, echo = FALSE}
+datatable(all, rownames = FALSE)
 ```
 

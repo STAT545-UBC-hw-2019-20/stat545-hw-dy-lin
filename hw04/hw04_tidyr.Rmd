@@ -1,5 +1,6 @@
 ---
 title: "Assignment 04: Tidy data and joins"
+author: "Diana Lin"
 output:
   html_document:
     toc: true
@@ -43,11 +44,14 @@ widened <- gapminder %>%
 ```
 
 * Each row in this table corresponds to a single year, and there is a column for each of the 142 countries containing the life expectancy in years.
-
 * There is a total of only 12 rows in this `tibble`, as there are only 12 years in the gapminder data set.
 
+#####  __NOTE__: this datatable can be scrolled **horizontally** to reveal _more_ columns!
+
 ```{r, echo = FALSE}
-datatable(widened, rownames = FALSE)
+widened %>%
+  datatable(rownames = FALSE,
+            options = list(scrollX = TRUE, fixedColumns = TRUE))
 ```
 
 #### 2. Take advantage of this new data shape to scatterplot life expectancy for one country against that of another.
@@ -59,7 +63,8 @@ widened_plot <- widened %>%
   ggtitle("Life Expectancy from 1952 to 2007") +
   ylab("Life Expectancy in China (years)") +
   xlab("Life Expectancy in Canada (years)") +
-  scale_color_discrete("Year")
+  scale_color_discrete("Year") +
+  theme(text = element_text(size=18))
 ```
 
 * China consistently has a lower life expectancy than Canada in every year.
@@ -81,7 +86,8 @@ lengthened <- widened %>%
 * The relengthened `tibble` will _only_ contain `year`, `country`, `lifeExp` (since the other columns `continent`, `gdpPercap` and `pop` were dropped during the original `pivot_wider()`), with each combination of `country` and `year` in each row.
 
 ```{r, echo = FALSE}
-datatable(lengthened)
+
+datatable(lengthened, rownames = FALSE)
 ```
 
 ## Exercise 2: Multivariate Data Reshaping
@@ -99,7 +105,7 @@ Don’t worry about producing a plot here. You are expected to use `pivot_wider(
 ```{r}
 widened <- gapminder %>%
   pivot_wider(id_cols  = year, 
-              names_from = country, 
+              names_from = country,
               names_sep = "_", 
               values_from = c("lifeExp", "gdpPercap"))
 ```
@@ -107,8 +113,11 @@ widened <- gapminder %>%
 * This widened `tibble` contains a column for `lifeExp` and `gdpPercap` of all 142 countries for each row, meaning a total of 285 columns.
 * This `tibble` has 12 rows, as that is the number of unique years in the `gapminder` dataset.
 
+##### __NOTE__: this datatable can be scrolled **horizontally** to reveal _more_ columns!
+
 ```{r, echo = FALSE}
-datatable(widened, rownames = FALSE)
+datatable(widened, rownames = FALSE, 
+          options = list(scrollX = TRUE, fixedColumns = TRUE))
 ```
 
 #### 2. Re-lengthen the data.
@@ -133,8 +142,13 @@ Do **ALL** of the activities in this section.
 Read in the made-up wedding guestlist and email addresses using the following lines (go ahead and copy-paste these):
 
 ```{r}
-guest <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
-email <- read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+guest <- suppressMessages(
+  read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/attend.csv")
+  )
+
+email <- suppressMessages(
+  read_csv("https://raw.githubusercontent.com/STAT545-UBC/Classroom/master/data/wedding/emails.csv")
+  )
 ```
 
 Then, complete the following tasks using the `tidyverse` (`tidyr`, `dplyr`, …). No need to do any pivoting – feel free to leave `guest` in its current format.
@@ -155,8 +169,13 @@ guest_email <- left_join(guest,
 )
 ```
 
+* This datatable contains all guests on the guest list, and an email address if one was provided.
+
+##### __NOTE__: this datatable can be scrolled **horizontally** to reveal _more_ columns!
+
 ```{r, echo = FALSE}
-datatable(guest_email, rownames = FALSE)
+datatable(guest_email, rownames = FALSE,
+          options = list(scrollX = TRUE, fixedColumns = TRUE))
 ```
 
 ### Exercise 3.2
@@ -167,7 +186,7 @@ datatable(guest_email, rownames = FALSE)
 email_not_guest <- anti_join(email_sep,guest, by = "name")
 ```
 
-* There are only three people we have emails for that are not on the guest list.
+* There are only three people we have emails for that are not on the guest list
 
 ```{r, echo = FALSE}
 datatable(email_not_guest, rownames = FALSE)
@@ -182,8 +201,12 @@ all <- full_join(guest, email_sep, by = "name")
 ```
 
 * The three people with emails but aren't on the guest list have been appended to the end of the `tibble`.
+* They have `NA` values for almost every column except for `name` and `email`.
+
+##### __NOTE__: this datatable can be scrolled **horizontally** to reveal _more_ columns!
 
 ```{r, echo = FALSE}
-datatable(all, rownames = FALSE)
+datatable(all, rownames = FALSE,
+          options = list(scrollX = TRUE, fixedColumns = TRUE))
 ```
 

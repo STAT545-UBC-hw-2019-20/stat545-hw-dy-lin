@@ -158,11 +158,18 @@ Then, complete the following tasks using the `tidyverse` (`tidyr`, `dplyr`, …)
 
 #### For each guest in the guestlist (`guest` tibble), add a column for email address, which can be found in the `email` tibble.
 
+* In order to join these two tibbles, the `email` tibble must be separated by guest as opposed to by party, using `separate_rows()`.
+* Then, the guest column in `email` must be renamed to `name`, as it appears in the `guest` tibble, using `rename()`.
+
 ```{r}
 email_sep <- email %>%
   separate_rows(email, guest, sep = ", ") %>%
   rename(name = guest)
+```
 
+* Then, since additional information is to be added to the original tibble, we employ the use of `left_join()`.
+
+```{r}
 guest_email <- left_join(guest,
           email_sep,
           by = "name"
@@ -182,11 +189,15 @@ datatable(guest_email, rownames = FALSE,
 
 #### Who do we have emails for, yet are not on the guestlist?
 
+* Using `anti_join()`, guests in `email_sep` who are also in `guest` will be dropped.
+
 ```{r}
 email_not_guest <- anti_join(email_sep,guest, by = "name")
 ```
 
-* There are only three people we have emails for that are not on the guest list
+* There are only three people we have emails for that are not on the guest list.
+* Since the original `email` tibble was processed to be separated by `name` instead of party, it is possible that other members of the party are on the guest list but these three are not.
+* After double checking, it is revealed that these three below belong to two separate parties, and none of the other party members were on the original guest list either.
 
 ```{r, echo = FALSE}
 datatable(email_not_guest, rownames = FALSE)
@@ -196,6 +207,7 @@ datatable(email_not_guest, rownames = FALSE)
 
 #### Make a guestlist that includes everyone we have emails for (in addition to those on the original guestlist).
 
+* The tibble should combine all guests in the `guest` list, and all guests in `email_sep`, by using `full_join()`.
 ```{r}
 all <- full_join(guest, email_sep, by = "name")
 ```

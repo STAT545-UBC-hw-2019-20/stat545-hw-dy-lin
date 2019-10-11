@@ -1,0 +1,157 @@
+---
+title: "HW05: Factor and Figure Management"
+author: "Diana Lin"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup
+
+```{r load}
+library(gapminder)
+library(tidyverse)
+library(DT)
+library(knitr)
+```
+
+## Exercise 1: Explain the value of the `here::here` package
+
+Read through the <a href="https://malco.io/2018/11/05/why-should-i-use-the-here-package-when-i-m-already-using-projects/">blog post by Malcom Barrett</a> where he outlines why one should use the `here::here` package in RStudio projects.
+
+#### Task: **In your own words**, summarize the value of the `here::here` package in 250 words or fewer.
+
+The `here::here` package is very valuable for many reasons. One of the biggest reasons is that it maintains compatibility in directory paths across operating systems, where Unix systems use a `/` but Windows uses `\`. Another reason that it is valuable is the ability to select a directory that acts as a root directory. By using `here()` you can bypass the relative path system and always provide an absolute path from the root. With the addition of `set_here()`, `.here` is created in the directory that is manually set as the root. The use of the `here::here` package resolves many onflicts that could arise from hardcoding directory paths and structures when sharing R scripts.
+
+## Exercise 2: Factor management
+
+#### Task: Choose **one** dataset (of your choice) and a variable to explore. After ensuring the variable(s) you're exploring are indeed factors, you should:
+
+1. Drop factor / levels
+1. Reorder levels based on knowledge from data
+
+We’ve elaborated on these steps for the gapminder and singer data sets below.
+
+Explore the effects of re-leveling a factor in a tibble by:
+
+1. Comparing the results of `arrange` on the original and re-leveled factor.
+1. Plotting a figure of before/after re-leveling the factor (make sure to assign the factor to an _aesthetic_ of your choosing).
+
+These explorations should involve the data, the factor levels, and at least two figures (before and after.
+
+### Elaboration for the gapminder data set
+
+**Drop Oceania.** Filter the Gapminder data to remove observations associated with the `continent` of Oceania. Additionally, remove unused factor levels. Provide concrete information on the data before and after removing these rows and Oceania; address the number of rows and the levels of the affected factors.
+
+#### Filter `gapminder` data to remove observations associated with the `continent` of Oceania.
+
+* After dropping Oceania, the dataframe has 1680 rows, and the `continent` column has 5 levels, with the 5 levels being the 5 continents, including Oceania.
+```{r}
+no_oceania <- gapminder %>%
+  filter(continent != "Oceania")
+
+nrow(no_oceania)
+nlevels(no_oceania$continent)
+levels(no_oceania$continent)
+```
+
+```{r, echo = FALSE}
+datatable(no_oceania, rownames = FALSE, caption = "Gapminder: No Oceania")
+```
+
+#### Additionally, remove unused factor levels.
+
+* After removing unused factors, the number of rows remains the same as after dropping Oceania, but the levels have decreased to 4, now excluding Oceania from the levels.
+
+```{r}
+no_oceania_dropped <- no_oceania %>%
+  droplevels()
+
+nrow(no_oceania_dropped)
+nlevels(no_oceania_dropped$continent)
+levels(no_oceania_dropped$continent)
+```
+
+#### Provide concrete information on the data before and after removing these rows and Oceania; address the number of rows and the levels of the affected factors.
+
+* Gapminder initially had 1704 rows and the `continent` column initially had 5 levels, where the levels were the 5 continents.
+```{r}
+nrow(gapminder)
+nlevels(gapminder$continent)
+levels(gapminder$continent)
+```
+
+* Here is a summary table:
+
+Data | Gapminder | Oceania Dropped | Unused Factors Dropped |
+-----|-----------|-----------------|------------------------|
+number of rows | 1704 | 1680 | 1680 |
+number of levels | 5 | 4 | 4 |
+levels | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe |
+
+**Reorder the levels of `country` or `continent`.** Use the forcats package to change the order of the factor levels, based on summarized information of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the mean/median. Use the `forcats` package in the tidyverse for this, rather than the baseR function `as.factor`.
+
+```{r}
+p <- gapminder %>%
+  group_by(continent) %>%
+  summarize(var_lifeExp = var(lifeExp))
+
+```
+
+* Before releveling:
+```{r}
+p %>%
+  ggplot() +
+  geom_col(aes(continent, var_lifeExp)) + 
+  theme_bw() +
+  ylab("Variance of Life Expectancy") +
+  xlab("Continent") + 
+  coord_flip()
+```
+
+* After releveling (using `fct_reorder`):
+```{r}
+p %>%
+  ggplot() +
+  geom_col(aes(fct_rev(
+    fct_reorder(continent, var_lifeExp)), 
+    var_lifeExp)) + 
+  theme_bw() +
+  ylab("Variance of Life Expectancy") +
+  xlab("Continent") + 
+  coord_flip()
+```
+* After releveling (using `arrange`):
+```{r}
+p %>%
+  arrange(continent, var_lifeExp) %>%
+  ggplot() +
+  geom_col(aes(continent, var_lifeExp)) + 
+  theme_bw() +
+  ylab("Variance of Life Expectancy") +
+  xlab("Continent") + 
+  coord_flip()
+```
+
+## Exercise 3: File input/output (I/O)
+You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use here::here() for reading in and writing out.
+
+With the imported data, play around with factor levels and use factors to order your data with one of your factors (i.e. non-alphabetically). For the I/O method(s) you chose, comment on whether or not your newly created file survived the round trip of writing to file then reading back in.
+
+## Exercise 4: Visualization design
+
+Go back through your previous assignments and class participation activities and find figures you created prior to the last week of the course. Recreate at least one figure in light of something you learned in the recent class meetings about visualization design and color.
+
+#### Task: Create a side-by-side plot and juxtapose your first attempt (show the original figure as-is) with a revised attempt after some time spent working on it and implementing principles of effective plotting principles. Comment and reflect on the differences.
+
+## Exercise 5: Writing figures to file
+
+#### Task: Use `ggsave()` to explicitly save a plot to file. Include the exported plot as part of your repository and assignment.
+
+Then, use `![Alt text](/path/to/img.png)` to load and embed that file into your report. You can play around with various options, such as:
+
+* Arguments of `ggsave()`, such as width, height, resolution or text scaling.
+* Various graphics devices, e.g. a vector vs. raster format.
+* Explicit provision of the plot object `p` via `ggsave(..., plot = p)`. Show a situation in which this actually matters.

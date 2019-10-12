@@ -239,7 +239,22 @@ grid.arrange(plot, arrange_plot, arrange_df_plot, fct_plot, fct_df_plot, ncol = 
 ## Exercise 3: File input/output (I/O)
 You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use `here::here()` for reading in and writing out.
 
+```{r}
+library(here)
+gapminder_avg <- gapminder %>%
+  group_by(continent) %>%
+  summarize(mean_lifeExp = mean(lifeExp), mean_gdpPercap = mean(gdpPercap), mean_pop = mean(pop))
+
+write_csv(gapminder_avg, here("gapminder_avg.csv"))
+```
+
 With the imported data, play around with factor levels and use factors to order your data with one of your factors (i.e. non-alphabetically). For the I/O method(s) you chose, comment on whether or not your newly created file survived the round trip of writing to file then reading back in.
+
+```{r}
+gapminder_avg_imported <- read_csv(here("gapminder_avg.csv"))
+
+gapminder_avg_imported$continent <- fct_reorder(gapminder_avg_imported$continent, gapminder_avg_imported$pop)
+```
 
 ## Exercise 4: Visualization design
 

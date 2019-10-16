@@ -19,6 +19,7 @@ suppressMessages(library(gapminder))
 suppressMessages(library(tidyverse))
 suppressMessages(library(DT))
 suppressMessages(library(knitr))
+suppressMessages(library(gridExtra))
 ```
 
 ## Exercise 1: Explain the value of the `here::here` package
@@ -27,7 +28,7 @@ Read through the <a href="https://malco.io/2018/11/05/why-should-i-use-the-here-
 
 #### Task: **In your own words**, summarize the value of the `here::here` package in 250 words or fewer.
 
-The `here::here` package is very valuable for many reasons. One of the biggest reasons is that it maintains compatibility in directory paths across operating systems, where Unix systems use a `/` but Windows uses `\`. Another reason that it is valuable is the ability to select a directory that acts as a root directory. By using `here()` you can bypass the relative path system and always provide an absolute path from the root. With the addition of `set_here()`, `.here` is created in the directory that is manually set as the root. The use of the `here::here` package resolves many onflicts that could arise from hardcoding directory paths and structures when sharing R scripts.
+The `here::here` package is very valuable for many reasons. One of the biggest reasons is that it maintains compatibility in directory paths across operating systems, where Unix systems use a `/` but Windows uses `\` for the directory hierarchy. Another reason that the `here::here` package is valuable is its ability to select a directory that acts as a root directory. By using `here()` you can bypass the relative path system and always provide an _absolute_ path from the root. Furthermore, the root itself will be automatically set to the directory containing an `.Rproj` file by default, but can be manually set using `set_here()`, which creates a `.here` file in the directory being set as the root. The use of the `here::here` package resolves many conflicts/problems that could arise from hardcoding absolute _or_ relative directory paths when sharing R scripts. This way, collaborators will never have to change hardcoded aspects of the code and can just run the R scripts just as they were received, removing a lot of unnecessary hassle that comes with project collaboration with multiple collaborators. At the same time, using the `here::here` package increases reproducibility in data analysis, and increases accessibility for script end-users who may not be programmers. To summarize, the `here::here` package not only facilitates many aspects of project collaboration, it also eases the dilemma of hardcoding absolute or relative paths in any R script, regardless of collaboration.
 
 ## Exercise 2: Factor management
 
@@ -234,7 +235,6 @@ These explorations should involve the data, the factor levels, and at least two 
   * Here is a summary figure:
   
     ```{r, echo = FALSE}
-    suppressMessages(library(gridExtra))
     grid.arrange(plot, arrange_plot, arrange_df_plot, fct_plot, fct_df_plot, ncol = 3)
     ```
   

@@ -17,7 +17,7 @@ GitHub Repository | GitHub Pages | Due Date
 [hw02](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw02) | [`HTML`](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-dy-lin/hw02/hw02_gapminder-dplyr.html) |Sep 24, 2019
 [hw03](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw03) | [`HTML`](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-dy-lin/hw03/hw03_ggplot.html) | Oct 01, 2019
 [hw04](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw04) | [`HTML`](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-dy-lin/hw04/hw04_tidyr.html) | Oct 08, 2019
-[hw05](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw05) | - | Oct 18, 2019
+[hw05](https://github.com/STAT545-UBC-hw-2019-20/stat545-hw-dy-lin/tree/master/hw05) | [`HTML`](https://stat545-ubc-hw-2019-20.github.io/stat545-hw-dy-lin/hw05/hw05_factors.html) | Oct 18, 2019
 
 ## Course Overview
 Duration: September 3 - October 17, 2019

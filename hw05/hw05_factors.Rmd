@@ -1,7 +1,11 @@
 ---
 title: "HW05: Factor and Figure Management"
 author: "Diana Lin"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    
 ---
 
 ```{r setup, include=FALSE}
@@ -91,54 +95,149 @@ These explorations should involve the data, the factor levels, and at least two 
   number of levels | 5 | 4 | 4 |
   levels | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe |
 
-**Reorder the levels of `country` or `continent`.** Use the forcats package to change the order of the factor levels, based on summarized information of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the mean/median. Use the `forcats` package in the tidyverse for this, rather than the baseR function `as.factor`.
+**Reorder the levels of `country` or `continent`.** Use the `forcats` package to change the order of the factor levels, based on summarized information of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the mean/median. Use the `forcats` package in the tidyverse for this, rather than the baseR function `as.factor`.
 
-```{r}
-p <- gapminder %>%
-  group_by(continent) %>%
-  summarize(var_lifeExp = var(lifeExp))
-
-```
-
-* Before releveling:
+* Before releveling: 
     ```{r}
-    p %>%
+    plot <- gapminder %>%
+      group_by(continent) %>%
+      summarise(var_lifeExp = var(lifeExp)) %>%
       ggplot() +
-      geom_col(aes(continent, var_lifeExp)) + 
+      geom_col(aes(continent,var_lifeExp)) +
       theme_bw() +
-      ylab("Variance of Life Expectancy") +
-      xlab("Continent") + 
-      coord_flip() + 
-      ggtitle("Variance of Life Expectancy Per Continent")
+      ylab("Variance of\nLife Expectancy") +
+      xlab("Continent") +
+      coord_flip() +
+      ggtitle("Figure 1")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(plot)
     ```
 
-* After releveling (using `fct_reorder`):
+* Using `fct_reorder()`:
     ```{r}
-    p %>%
+    fct_plot <- gapminder %>%
+      group_by(continent) %>%
+      summarise(var_lifeExp = var(lifeExp)) %>%
       ggplot() +
-      geom_col(aes(fct_rev(
-        fct_reorder(continent, var_lifeExp)), 
-        var_lifeExp)) + 
+      geom_col(aes(fct_reorder(continent, var_lifeExp),var_lifeExp)) +
       theme_bw() +
-      ylab("Variance of Life Expectancy") +
-      xlab("Continent") + 
-      coord_flip() + 
-      ggtitle("Variance of Life Expectancy Per Continent")
+      ylab("Variance of\nLife Expectancy") +
+      xlab("Continent") +
+      coord_flip() +
+      ggtitle("Figure 2")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(fct_plot)
     ```
 
-* After releveling (using `arrange`):
+* Using `arrange()`:
     ```{r}
-    p %>%
-      arrange(continent, var_lifeExp) %>%
+    arrange_plot <- gapminder %>%
+      group_by(continent) %>%
+      summarise(var_lifeExp = var(lifeExp)) %>%
+      arrange(desc(var_lifeExp), .by_group = TRUE) %>%
       ggplot() +
-      geom_col(aes(continent, var_lifeExp)) + 
+      geom_col(aes(continent,var_lifeExp)) +
       theme_bw() +
-      ylab("Variance of Life Expectancy") +
-      xlab("Continent") + 
-      coord_flip() + 
-      ggtitle("Variance of Life Expectancy Per Continent")
+      ylab("Variance of\nLife Expectancy") +
+      xlab("Continent") +
+      coord_flip() +
+      ggtitle("Figure 3")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(arrange_plot)
     ```
 
+* As you can see, `arrange()` does not relevel the factors like `fct_reorder()` does, evidenced by no change in the "before releveling" plot and the "using `arrange()`" plot (i.e. Figure 1 and Figure 3 are identical). However, `arrange()` does reorder the dataframe itself, just not releveling the factors.
+* Let's verify this by checking the dataframes themselves:
+  * Using `fct_reorder()`:
+    ```{r}
+    fct <- gapminder %>%
+      group_by(continent) %>%
+      summarise(var_lifeExp = var(lifeExp))
+    
+    fct$continent <- fct_reorder(fct$continent, fct$var_lifeExp)
+    ```
+      
+      * It seems that, using `fct_order()` does not change the actual ordering of the `var_lifeExp` column:
+    ```{r, echo = FALSE}
+    kable(fct, caption = "Dataframe Appearance: `fct_order()`")
+    ```
+      
+      * But, that it does change the levels, ordering from lowest to highest `var_lifeExp`:
+    ```{r}
+    levels(fct$continent)
+    ```
+      
+      * As a final check, replot using the `fct` dataframe:
+    ```{r}
+    fct_df_plot <- ggplot(fct) +
+      geom_col(aes(continent,var_lifeExp)) +
+      theme_bw() +
+      ylab("Variance of\nLife Expectancy") +
+      xlab("Continent") +
+      coord_flip() +
+      ggtitle("Figure 4")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(fct_df_plot)
+    ```
+    * Figure 2 and Figure 4 are the same, further confirming that `fct_reorder()` relevels the factors.
+  * Using `arrange()`:
+    ```{r}
+    arrange <- gapminder %>%
+      group_by(continent) %>%
+      summarise(var_lifeExp = var(lifeExp)) %>%
+      arrange(var_lifeExp, .by_group = TRUE)
+    ```
+    
+    * It seems that, using `arrange()` does change the actual ordering of the `var_lifeExp` column:
+    ```{r, echo = FALSE}
+    kable(arrange, caption = "Dataframe Appearance: Using `arrange()`")
+    ```
+    * But that it does NOT change the levels, as they are still ordered alphabetically instead of by `var_lifeExp`:
+    ```{r}
+    levels(arrange$continent)
+    ```
+    * As a final check: replot using the `arrange` dataframe:
+    ```{r}
+    arrange_df_plot <- ggplot(arrange) +
+      geom_col(aes(continent,var_lifeExp)) +
+      theme_bw() +
+      ylab("Variance of\nLife Expectancy") +
+      xlab("Continent") +
+      coord_flip() +
+      ggtitle("Figure 5")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(arrange_df_plot)
+    ```
+    
+    * Figure 1, 3 and Figure 5 are the same, supporting the conclusion that `arrange` does not relevel the factors.
+* __Conclusion__: `fct_reorder` relevels the factors, but does not change the appearance of its dataframe, while `arrange()` changes the appearance of its dataframe, but does _not_ relevel the factors.
+  * Here is a summary table:
+
+  Figure | Function | Description | Outcome | Equal to |
+  -----|-----------|-----------------|-----------------|-----------------
+  1 | NA | This is the original plot with no attempt at releveling. | Factors are ordered alphabetically by default | Figure 3, 5 |
+  2 | `fct_reorder()` | This is the plot where `fct_reorder()` was used as an `aes` in `ggplot()` | Factors are ordered by `var_lifeExp` | Figure 4
+  3 | `arrange()` | This is the plot where `arrange()` was used on the dataframe before piping into `ggplot()` | Factors are _still_ ordered alphabetically by default| Figure 1, 5
+  4 | `fct_reorder()` | This is the plot where `fct_reorder()` was used on the factor in the dataframe, and then that dataframe was plotted | Factors are ordered by `var_lifeExp` | Figure 2
+  5 | `arrange()` | This is the plot where `arrange()` was used on the dataframe and then that dataframe was plotted | Factors are _still_ ordered alphabetically by default | Figure 1, 3
+  
+  * Here is a summary figure:
+  
+    ```{r, echo = FALSE}
+    suppressMessages(library(gridExtra))
+    grid.arrange(plot, arrange_plot, arrange_df_plot, fct_plot, fct_df_plot, ncol = 3)
+    ```
+  
 ## Exercise 3: File input/output (I/O)
 You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use `here::here()` for reading in and writing out.
 
@@ -268,9 +367,9 @@ Go back through your previous assignments and class participation activities and
 * Combine the two side by side:
 
     ```{r,fig.width=10}
-    suppressMessages(library(gridExtra))
     combined <- grid.arrange(before_plot,after_plot, ncol=2)
     ```
+    
     ```{r, echo = FALSE}
     print(combined)
     ```
@@ -302,14 +401,14 @@ Then, use `![Alt text](/path/to/img.png)` to load and embed that file into your 
 
 By default, `ggsave()` saves the most recently plot _made using `ggplot()`_. With the code below, `ggsave()` will save `after_plot` (the most recent plot) to `combined.png`. In this case, since `combined` (the plot we want to save) was not plotted directly using `ggplot()`, it is not the plot `ggsave()` chooses to save. Instead `ggsave()` chooses to save `after_plot`. Specifying `plot =` matters _in this case_.
 
-    ```{r}
-    ggsave(here::here("hw05","combined.png"), width = 16, height = 9, dpi = 300, device = "png")
-    ```
+```{r}
+ggsave(here::here("hw05","combined.png"), width = 16, height = 9, dpi = 300, device = "png")
+```
 
 To save the `combined` plot, `plot = combined` must be specified explicitly:
 
-    ```{r}
-    ggsave(here::here("hw05","combined.png"), plot = combined, width = 16, height = 9, dpi = 300, device = "png")
-    ```
+```{r}
+ggsave(here::here("hw05","combined.png"), plot = combined, width = 16, height = 9, dpi = 300, device = "png")
+```
 
 ![Before and After _Effective Visualization_](combined.png)

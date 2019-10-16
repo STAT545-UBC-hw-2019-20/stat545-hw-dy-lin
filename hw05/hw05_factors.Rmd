@@ -391,12 +391,12 @@ Go back through your previous assignments and class participation activities and
     print(combined)
     ```
 
-* Noticeable changes for effective visualization:
-  * Changes in the data:
+* Commenting on the differences:
+  * Differences in the data:
     * pivoted the data longer to make use of faceting
     * subsetted the dataset to North American countries to resolve overcrowding
     * factors releveled to reflect North-South geographic location order
-  * Changes in the plot:
+  * Differences in the plot:
     * changed title to a less redundant/repetitive title
     * increased overall font size
     * added lines to the points 
@@ -405,6 +405,14 @@ Go back through your previous assignments and class participation activities and
     * removed vertical grid lines
     * removed grey background colour
     * instead of `lifeExp` vs `pop`, it is now `lifeExp` vs `year` and `pop` vs `year`
+
+* Reflecting on the differences:
+  * The trends are actually visible in the new plot
+  * In the old plot, with the colour scheme and the shapes, it was impossible to actually understand what the plot was trying to convey
+  * In the new plot, the subsampling has allowed for a clear message to be conveyed
+  * The faceting has also allowed for both trends to be seen simultaneously more easily
+  * The lines in the plot also allude to the trends to be observed
+  * The removed background and grid lines makes the plot less distracting
 
 
 ## Exercise 5: Writing figures to file

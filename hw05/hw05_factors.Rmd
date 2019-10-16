@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Setup
 
 ```{r load}
-library(gapminder)
-library(tidyverse)
-library(DT)
-library(knitr)
+suppressMessages(library(gapminder))
+suppressMessages(library(tidyverse))
+suppressMessages(library(DT))
+suppressMessages(library(knitr))
 ```
 
 ## Exercise 1: Explain the value of the `here::here` package
@@ -48,48 +48,48 @@ These explorations should involve the data, the factor levels, and at least two 
 #### Filter `gapminder` data to remove observations associated with the `continent` of Oceania.
 
 * After dropping Oceania, the dataframe has 1680 rows, and the `continent` column has 5 levels, with the 5 levels being the 5 continents, including Oceania.
-```{r}
-no_oceania <- gapminder %>%
-  filter(continent != "Oceania")
+    ```{r}
+    no_oceania <- gapminder %>%
+      filter(continent != "Oceania")
+    
+    nrow(no_oceania)
+    nlevels(no_oceania$continent)
+    levels(no_oceania$continent)
+    ```
 
-nrow(no_oceania)
-nlevels(no_oceania$continent)
-levels(no_oceania$continent)
-```
-
-```{r, echo = FALSE}
-datatable(no_oceania, rownames = FALSE, caption = "Gapminder: No Oceania")
-```
+    ```{r, echo = FALSE}
+    datatable(no_oceania, rownames = FALSE, caption = "Gapminder: No Oceania")
+    ```
 
 #### Additionally, remove unused factor levels.
 
 * After removing unused factors, the number of rows remains the same as after dropping Oceania, but the levels have decreased to 4, now excluding Oceania from the levels.
 
-```{r}
-no_oceania_dropped <- no_oceania %>%
-  droplevels()
-
-nrow(no_oceania_dropped)
-nlevels(no_oceania_dropped$continent)
-levels(no_oceania_dropped$continent)
-```
+    ```{r}
+    no_oceania_dropped <- no_oceania %>%
+      droplevels()
+    
+    nrow(no_oceania_dropped)
+    nlevels(no_oceania_dropped$continent)
+    levels(no_oceania_dropped$continent)
+    ```
 
 #### Provide concrete information on the data before and after removing these rows and Oceania; address the number of rows and the levels of the affected factors.
 
 * Gapminder initially had 1704 rows and the `continent` column initially had 5 levels, where the levels were the 5 continents.
-```{r}
-nrow(gapminder)
-nlevels(gapminder$continent)
-levels(gapminder$continent)
-```
+    ```{r}
+    nrow(gapminder)
+    nlevels(gapminder$continent)
+    levels(gapminder$continent)
+    ```
 
 * Here is a summary table:
 
-Data | Gapminder | Oceania Dropped | Unused Factors Dropped |
------|-----------|-----------------|------------------------|
-number of rows | 1704 | 1680 | 1680 |
-number of levels | 5 | 4 | 4 |
-levels | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe |
+  Data | Gapminder | Oceania Dropped | Unused Factors Dropped |
+  -----|-----------|-----------------|------------------------|
+  number of rows | 1704 | 1680 | 1680 |
+  number of levels | 5 | 4 | 4 |
+  levels | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe |
 
 **Reorder the levels of `country` or `continent`.** Use the forcats package to change the order of the factor levels, based on summarized information of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the mean/median. Use the `forcats` package in the tidyverse for this, rather than the baseR function `as.factor`.
 
@@ -101,50 +101,194 @@ p <- gapminder %>%
 ```
 
 * Before releveling:
-```{r}
-p %>%
-  ggplot() +
-  geom_col(aes(continent, var_lifeExp)) + 
-  theme_bw() +
-  ylab("Variance of Life Expectancy") +
-  xlab("Continent") + 
-  coord_flip()
-```
+    ```{r}
+    p %>%
+      ggplot() +
+      geom_col(aes(continent, var_lifeExp)) + 
+      theme_bw() +
+      ylab("Variance of Life Expectancy") +
+      xlab("Continent") + 
+      coord_flip() + 
+      ggtitle("Variance of Life Expectancy Per Continent")
+    ```
 
 * After releveling (using `fct_reorder`):
-```{r}
-p %>%
-  ggplot() +
-  geom_col(aes(fct_rev(
-    fct_reorder(continent, var_lifeExp)), 
-    var_lifeExp)) + 
-  theme_bw() +
-  ylab("Variance of Life Expectancy") +
-  xlab("Continent") + 
-  coord_flip()
-```
+    ```{r}
+    p %>%
+      ggplot() +
+      geom_col(aes(fct_rev(
+        fct_reorder(continent, var_lifeExp)), 
+        var_lifeExp)) + 
+      theme_bw() +
+      ylab("Variance of Life Expectancy") +
+      xlab("Continent") + 
+      coord_flip() + 
+      ggtitle("Variance of Life Expectancy Per Continent")
+    ```
+
 * After releveling (using `arrange`):
-```{r}
-p %>%
-  arrange(continent, var_lifeExp) %>%
-  ggplot() +
-  geom_col(aes(continent, var_lifeExp)) + 
-  theme_bw() +
-  ylab("Variance of Life Expectancy") +
-  xlab("Continent") + 
-  coord_flip()
-```
+    ```{r}
+    p %>%
+      arrange(continent, var_lifeExp) %>%
+      ggplot() +
+      geom_col(aes(continent, var_lifeExp)) + 
+      theme_bw() +
+      ylab("Variance of Life Expectancy") +
+      xlab("Continent") + 
+      coord_flip() + 
+      ggtitle("Variance of Life Expectancy Per Continent")
+    ```
 
 ## Exercise 3: File input/output (I/O)
-You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use here::here() for reading in and writing out.
+You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use `here::here()` for reading in and writing out.
 
 With the imported data, play around with factor levels and use factors to order your data with one of your factors (i.e. non-alphabetically). For the I/O method(s) you chose, comment on whether or not your newly created file survived the round trip of writing to file then reading back in.
+
+* Write the data out to `avg_gapminder.csv`:
+
+    ```{r}
+    library(here)
+    csv_out <- gapminder %>%
+      group_by(continent) %>%
+      summarize(avglifeExp = mean(lifeExp), avgGDP = mean(gdpPercap), avgPop = mean(pop))
+    
+    write_csv(csv_out, here::here("hw05", "avg_gapminder.csv"), col_names = TRUE)
+    ```
+
+* What `csv_out` looks like:
+
+    ```{r, echo = FALSE}
+    kable(csv_out)
+    ```
+
+* Read the data back into `csv_in`:
+    ```{r}
+    csv_in <- read_csv(here::here("hw05", "avg_gapminder.csv"), col_names = TRUE)
+    ```
+
+* What `csv_in` looks like: 
+    ```{r, echo = FALSE}
+    kable(csv_in)
+    ```
+
+* In order to play with factors, `continent` must be a factor first. Using the code above to `read_csv()`, the resulting dataframe does not actually contain factors! The `continent` column has been imported as a `character` class instead of `factor`:
+    ```{r}
+    str(csv_in)
+    ```
+
+* To relevel factors, we must make sure `continent` is a factor. There are two ways to do this:
+  * Adding additional parameters to `read_csv()`:
+    ```{r}
+    csv_in <- read_csv(
+      here::here("hw05", "avg_gapminder.csv"), 
+      col_names = TRUE, 
+      cols(
+        continent = col_factor(),
+        avglifeExp = col_double(),
+        avgGDP = col_double(),
+        avgPop = col_double()
+      )
+    )
+    levels(csv_in$continent)
+    ```
+
+  * Using `factor()`:
+    ```{r}
+    csv_in$continent <- factor(csv_in$continent)
+    levels(csv_in$continent)
+    
+    ```
+  
+* Releveling: 
+    ```{r}
+    csv_in$continent <- fct_reorder(csv_in$continent, csv_in$avgPop)
+    levels(csv_in$continent)
+    ```
+
+* Since `csv_in` and `csv_out` look identical to one another (with or without factor releveling), the newly created file `avg_gapminder.csv` **DID** survive the round trip of writing to file then reading back in.
 
 ## Exercise 4: Visualization design
 
 Go back through your previous assignments and class participation activities and find figures you created prior to the last week of the course. Recreate at least one figure in light of something you learned in the recent class meetings about visualization design and color.
 
 #### Task: Create a side-by-side plot and juxtapose your first attempt (show the original figure as-is) with a revised attempt after some time spent working on it and implementing principles of effective plotting principles. Comment and reflect on the differences.
+
+* Before plot (I was given feedback from one of the TAs that it was too busy/crowded):
+    ```{r}
+    before_plot <- gapminder %>%
+      mutate(million=pop/(10**6)) %>%
+      ggplot(aes(x=million,y=lifeExp)) +
+      geom_point(aes(shape = continent, colour = year)) +
+      ggtitle("Life Expectancy vs Population") +
+      xlab("Population (millions)") +
+      ylab("Life Expectancy (years)")
+    ```
+    
+    ```{r, echo = FALSE}
+    print(before_plot)
+    ```
+
+* After plot:
+    ```{r}
+    data <- gapminder %>%
+      mutate(pop=pop/(10**6)) %>%
+      filter(country == "Canada" | country == "United States" | country == "Mexico") %>%
+      select(c(-gdpPercap)) %>% 
+      pivot_longer(cols = c(lifeExp,pop),
+                   names_to = "key", 
+                   values_to = "value")
+    
+    data$country <- fct_relevel(data$country,"Canada", "United States", "Mexico") %>%
+      droplevels()
+    
+    after_plot <- data %>%
+      ggplot(aes(year,value)) +
+      geom_line(aes(colour = country)) + 
+      geom_point(aes(colour = country)) +
+      facet_wrap(~ key, 
+                 ncol = 1, 
+                 scale = "free_y",
+                 labeller = labeller(key = c(lifeExp = "Life Expectancy (years)", 
+                                             pop = "Population (millions)"))) +
+      ggtitle("Trends in North America") +
+      xlab("year") +
+      ylab("") +
+      theme_bw() +
+      theme(text = element_text(size = 14), 
+            panel.grid.major.x = element_blank(), 
+            panel.grid.minor.x = element_blank(),
+            legend.position="bottom"
+      )
+    ```
+
+    ```{r, echo = FALSE}
+    print(after_plot)
+    ```
+
+* Combine the two side by side:
+
+    ```{r,fig.width=10}
+    suppressMessages(library(gridExtra))
+    combined <- grid.arrange(before_plot,after_plot, ncol=2)
+    ```
+    ```{r, echo = FALSE}
+    print(combined)
+    ```
+
+* Noticeable changes for effective visualization:
+  * Changes in the data:
+    * pivoted the data longer to make use of faceting
+    * subsetted the dataset to North American countries to resolve overcrowding
+    * factors releveled to reflect North-South geographic location order
+  * Changes in the plot:
+    * changed title to a less redundant/repetitive title
+    * increased overall font size
+    * added lines to the points 
+    * changed facet labels to replace y-axis labels
+      * removed now redundant y-axis labels
+    * removed vertical grid lines
+    * removed grey background colour
+
 
 ## Exercise 5: Writing figures to file
 
@@ -155,3 +299,17 @@ Then, use `![Alt text](/path/to/img.png)` to load and embed that file into your 
 * Arguments of `ggsave()`, such as width, height, resolution or text scaling.
 * Various graphics devices, e.g. a vector vs. raster format.
 * Explicit provision of the plot object `p` via `ggsave(..., plot = p)`. Show a situation in which this actually matters.
+
+By default, `ggsave()` saves the most recently plot _made using `ggplot()`_. With the code below, `ggsave()` will save `after_plot` (the most recent plot) to `combined.png`. In this case, since `combined` (the plot we want to save) was not plotted directly using `ggplot()`, it is not the plot `ggsave()` chooses to save. Instead `ggsave()` chooses to save `after_plot`. Specifying `plot =` matters _in this case_.
+
+    ```{r}
+    ggsave(here::here("hw05","combined.png"), width = 16, height = 9, dpi = 300, device = "png")
+    ```
+
+To save the `combined` plot, `plot = combined` must be specified explicitly:
+
+    ```{r}
+    ggsave(here::here("hw05","combined.png"), plot = combined, width = 16, height = 9, dpi = 300, device = "png")
+    ```
+
+![Before and After _Effective Visualization_](combined.png)

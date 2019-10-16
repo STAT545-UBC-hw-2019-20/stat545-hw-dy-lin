@@ -167,13 +167,12 @@ These explorations should involve the data, the factor levels, and at least two 
     fct$continent <- fct_reorder(fct$continent, fct$var_lifeExp)
     ```
       
-      * It seems that, using `fct_reorder()` does not change the actual ordering of the `var_lifeExp` column when shown in its dataframe format:
+    * It seems that, using `fct_reorder()` does not change the actual ordering of the `var_lifeExp` column when shown in its dataframe format:
     ```{r, echo = FALSE}
     kable(fct, caption = "Dataframe Appearance: `fct_reorder()`")
     ```
-      
-      
-      * But, that it does change the levels, ordering from lowest to highest `var_lifeExp`:
+
+    * But, that it does change the levels, ordering from lowest to highest `var_lifeExp`:
     ```{r}
     levels(fct$continent)
     ```
@@ -205,6 +204,7 @@ These explorations should involve the data, the factor levels, and at least two 
     ```{r, echo = FALSE}
     kable(arrange, caption = "Dataframe Appearance: Using `arrange()`")
     ```
+    
     * But that it does NOT change the levels, as they are still ordered alphabetically instead of by `var_lifeExp`:
     ```{r}
     levels(arrange$continent)

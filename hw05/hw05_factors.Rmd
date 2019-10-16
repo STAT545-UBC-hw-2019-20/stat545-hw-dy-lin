@@ -20,6 +20,7 @@ suppressMessages(library(tidyverse))
 suppressMessages(library(DT))
 suppressMessages(library(knitr))
 suppressMessages(library(gridExtra))
+suppressMessages(library(here))
 ```
 
 ## Exercise 1: Explain the value of the `here::here` package
@@ -88,13 +89,15 @@ These explorations should involve the data, the factor levels, and at least two 
     levels(gapminder$continent)
     ```
 
-* Here is a summary table:
+* Here is a summary table to address the number of rows and the levels of the affected factors:
 
   Data | Gapminder | Oceania Dropped | Unused Factors Dropped |
   -----|-----------|-----------------|------------------------|
   number of rows | 1704 | 1680 | 1680 |
   number of levels | 5 | 4 | 4 |
   levels | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe, Oceania | Africa, Americas, Asia, Europe |
+
+* The number of levels (and the levels themselves) only decreased when `droplevels()` was used, but the number of rows decreased when `filter()` was used.
 
 **Reorder the levels of `country` or `continent`.** Use the `forcats` package to change the order of the factor levels, based on summarized information of one of the quantitative variables. Consider experimenting with a summary statistic beyond the most basic choice of the mean/median. Use the `forcats` package in the tidyverse for this, rather than the baseR function `as.factor`.
 
@@ -164,10 +167,11 @@ These explorations should involve the data, the factor levels, and at least two 
     fct$continent <- fct_reorder(fct$continent, fct$var_lifeExp)
     ```
       
-      * It seems that, using `fct_order()` does not change the actual ordering of the `var_lifeExp` column:
+      * It seems that, using `fct_reorder()` does not change the actual ordering of the `var_lifeExp` column when shown in its dataframe format:
     ```{r, echo = FALSE}
-    kable(fct, caption = "Dataframe Appearance: `fct_order()`")
+    kable(fct, caption = "Dataframe Appearance: `fct_reorder()`")
     ```
+      
       
       * But, that it does change the levels, ordering from lowest to highest `var_lifeExp`:
     ```{r}
@@ -238,6 +242,8 @@ These explorations should involve the data, the factor levels, and at least two 
     grid.arrange(plot, arrange_plot, arrange_df_plot, fct_plot, fct_df_plot, ncol = 3)
     ```
   
+  * Looks like Oceania has the lowest variance in its life expectancy, while Asia has the highest variance.
+  
 ## Exercise 3: File input/output (I/O)
 You are expected to create something new, probably by filtering or grouped-summarization of your dataset (for e.g., Singer, Gapminder, or another dataset), export it to disk and then reload it back in using one of the packages above. You should use `here::here()` for reading in and writing out.
 
@@ -257,7 +263,7 @@ With the imported data, play around with factor levels and use factors to order 
 * What `csv_out` looks like:
 
     ```{r, echo = FALSE}
-    kable(csv_out)
+    kable(csv_out, caption = "`csv_out`: Dataframe written out to `avg_gapminder.csv`")
     ```
 
 * Read the data back into `csv_in`:
@@ -267,7 +273,7 @@ With the imported data, play around with factor levels and use factors to order 
 
 * What `csv_in` looks like: 
     ```{r, echo = FALSE}
-    kable(csv_in)
+    kable(csv_in, caption = "`csv_in`: Dataframe read in from `avg_gapminder.csv`")
     ```
 
 * In order to play with factors, `continent` must be a factor first. Using the code above to `read_csv()`, the resulting dataframe does not actually contain factors! The `continent` column has been imported as a `character` class instead of `factor`:
@@ -298,11 +304,22 @@ With the imported data, play around with factor levels and use factors to order 
     
     ```
   
-* Releveling: 
+* Releveling (by `avgPop`): 
     ```{r}
     csv_in$continent <- fct_reorder(csv_in$continent, csv_in$avgPop)
     levels(csv_in$continent)
     ```
+  * Check that releveling actually reordered the factors in order of increasing `avgPop`:
+    ```{r}
+    releveled <- csv_in %>%
+      arrange(avgPop)
+    ```
+  
+    ```{r, echo = FALSE}
+    kable(releveled, caption = "Using `arrange()` to check if factors releveled correctly")
+    ```
+  
+  * Since the order of `continent` in the table above matches the order of `levels(csv_in$continent)`, releveling was successful!
 
 * Since `csv_in` and `csv_out` look identical to one another (with or without factor releveling), the newly created file `avg_gapminder.csv` **DID** survive the round trip of writing to file then reading back in.
 
@@ -387,6 +404,7 @@ Go back through your previous assignments and class participation activities and
       * removed now redundant y-axis labels
     * removed vertical grid lines
     * removed grey background colour
+    * instead of `lifeExp` vs `pop`, it is now `lifeExp` vs `year` and `pop` vs `year`
 
 
 ## Exercise 5: Writing figures to file
@@ -411,4 +429,5 @@ To save the `combined` plot, `plot = combined` must be specified explicitly:
 ggsave(here::here("hw05","combined.png"), plot = combined, width = 16, height = 9, dpi = 300, device = "png")
 ```
 
+Using `![Alt text](/path/to/img.png)` to load and embed that file into your report:
 ![Before and After _Effective Visualization_](combined.png)

@@ -205,6 +205,7 @@ These explorations should involve the data, the factor levels, and at least two 
     kable(arrange, caption = "Dataframe Appearance: Using `arrange()`")
     ```
     
+    
     * But that it does NOT change the levels, as they are still ordered alphabetically instead of by `var_lifeExp`:
     ```{r}
     levels(arrange$continent)
